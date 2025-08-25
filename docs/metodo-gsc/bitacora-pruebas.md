@@ -11,8 +11,10 @@ Registro cronológico inverso (más reciente primero) de todas las pruebas, iter
 ## 25 de Agosto de 2025 - PROBLEMA SISTÉMICO: Endpoints POST No Disponibles
 
 ### Contexto
-**Participantes**: Higini (GSC), Valentín (GSC)  
+**Participantes**: Higini (GSC), Valentín (GSC)
+
 **Objetivo**: Probar creación de borradores de facturas vía API
+
 **Herramienta**: n8n workflows con endpoints ODATA
 
 ### Cronología de Pruebas
