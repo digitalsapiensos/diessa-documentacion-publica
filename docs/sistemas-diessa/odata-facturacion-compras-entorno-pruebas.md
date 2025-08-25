@@ -1,7 +1,8 @@
 ---
 id: odata-facturacion-compras-entorno-pruebas
 title: ODATA para Facturación de Compras - Entorno de Pruebas
-sidebar_label: ODATA Facturación Compras
+sidebar_label: Entorno de Pruebas
+sidebar_position: 3
 ---
 
 # ODATA para Facturación de Compras - Configuración Técnica Completa

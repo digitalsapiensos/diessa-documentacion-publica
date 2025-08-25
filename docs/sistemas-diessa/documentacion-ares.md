@@ -2,6 +2,7 @@
 id: documentacion-ares
 title: Documentación Compartida por ARES
 sidebar_label: Documentación ARES
+sidebar_position: 4
 ---
 
 # Documentación Compartida por ARES

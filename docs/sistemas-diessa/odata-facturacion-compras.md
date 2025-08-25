@@ -1,5 +1,6 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
+sidebar_label: ODATA para Facturación de Compras SD 253091
 ---
 
 # ODATA para Facturación de Compras SD 253091
