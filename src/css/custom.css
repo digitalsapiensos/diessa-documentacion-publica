@@ -1,0 +1,182 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #2c3e50;
+  --ifm-color-primary-dark: #263849;
+  --ifm-color-primary-darker: #233544;
+  --ifm-color-primary-darkest: #1d2b38;
+  --ifm-color-primary-light: #34495e;
+  --ifm-color-primary-lighter: #374f67;
+  --ifm-color-primary-lightest: #3f5b75;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #4a6cf7;
+  --ifm-color-primary-dark: #3558f5;
+  --ifm-color-primary-darker: #2d4ff4;
+  --ifm-color-primary-darkest: #1a3ef1;
+  --ifm-color-primary-light: #5f80f9;
+  --ifm-color-primary-lighter: #6c87fa;
+  --ifm-color-primary-lightest: #8ba1fc;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Enlaces PDF destacados */
+a[href$=".pdf"], a[href$=".PDF"] {
+  color: #2980b9 !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease;
+}
+
+a[href$=".pdf"]:hover, a[href$=".PDF"]:hover {
+  color: #3498db !important;
+  text-decoration: underline !important;
+  transform: translateY(-1px);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Enlaces PDF en modo oscuro */
+[data-theme='dark'] a[href$=".pdf"], [data-theme='dark'] a[href$=".PDF"] {
+  color: #5dade2 !important;
+}
+
+[data-theme='dark'] a[href$=".pdf"]:hover, [data-theme='dark'] a[href$=".PDF"]:hover {
+  color: #85c1e9 !important;
+}
+
+/* Mejorar visibilidad navegación lateral en modo claro */
+.table-of-contents__link--active {
+  color: #2c3e50 !important;
+  font-weight: 700 !important;
+  background-color: rgba(44, 62, 80, 0.1) !important;
+  border-left: 3px solid #2c3e50 !important;
+  padding-left: 0.75rem !important;
+}
+
+/* Hover en enlaces de navegación */
+.table-of-contents__link:hover {
+  color: #2c3e50 !important;
+  background-color: rgba(44, 62, 80, 0.05) !important;
+}
+
+/* En modo oscuro mantener comportamiento original */
+[data-theme='dark'] .table-of-contents__link--active {
+  color: var(--ifm-color-primary) !important;
+  background-color: rgba(74, 108, 247, 0.1) !important;
+  border-left-color: var(--ifm-color-primary) !important;
+}
+
+/* Diagramas Mermaid con zoom simple */
+.mermaid {
+  position: relative;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(44, 62, 80, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+.mermaid:hover {
+  border-color: #2c3e50;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  background: rgba(255, 255, 255, 1);
+}
+
+/* SVG zoom con hover */
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.4s ease;
+  cursor: zoom-in;
+}
+
+.mermaid:hover svg {
+  transform: scale(1.1);
+}
+
+/* Instrucciones claras */
+.mermaid::after {
+  content: "🔍 Click derecho → Abrir imagen en nueva pestaña para zoom completo";
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(44, 62, 80, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: system-ui;
+}
+
+.mermaid:hover::after {
+  opacity: 1;
+}
+
+/* Modo oscuro */
+[data-theme='dark'] .mermaid {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(74, 108, 247, 0.3);
+}
+
+[data-theme='dark'] .mermaid:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: #4a6cf7;
+}
+
+/* Modal para diagrama expandido */
+.diagram-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  cursor: zoom-out;
+}
+
+.diagram-modal .mermaid {
+  max-width: 90vw;
+  max-height: 90vh;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  transform: none;
+  cursor: zoom-out;
+}
+
+[data-theme='dark'] .mermaid {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .diagram-modal .mermaid {
+  background: var(--ifm-background-color);
+}
+
+/* Loading animation para SimpleAuth */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

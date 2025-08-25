@@ -1,0 +1,38 @@
+/* Estilos específicos para diagramas Mermaid */
+.mermaid {
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* Asegurar que los diagramas se rendericen correctamente */
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Mejor visibilidad en modo oscuro */
+[data-theme='dark'] .mermaid {
+  background: transparent;
+}
+
+/* Estilo para los nodos del diagrama */
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node ellipse,
+.mermaid .node polygon {
+  fill: var(--ifm-color-primary-lightest);
+  stroke: var(--ifm-color-primary);
+  stroke-width: 2px;
+}
+
+/* Texto de los nodos */
+.mermaid .nodeLabel {
+  color: var(--ifm-font-color-base);
+  font-family: var(--ifm-font-family-base);
+}
+
+/* Flechas y conexiones */
+.mermaid .edgePath path {
+  stroke: var(--ifm-color-primary);
+  stroke-width: 2px;
+}
