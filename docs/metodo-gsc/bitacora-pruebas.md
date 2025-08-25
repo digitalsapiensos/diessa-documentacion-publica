@@ -11,15 +11,15 @@ Registro cronológico inverso (más reciente primero) de todas las pruebas, iter
 ## 25 de Agosto de 2025 - PROBLEMA SISTÉMICO: Endpoints POST No Disponibles
 
 ### Contexto
-**Participantes**: Higini (GSC), Kiko (Consultor IA)  
+**Participantes**: Higini (GSC), Valentín (GSC)  
 **Objetivo**: Probar creación de borradores de facturas vía API
 **Herramienta**: n8n workflows con endpoints ODATA
 
 ### Cronología de Pruebas
 
 #### **13:00 - Inicio Pruebas Creación de Facturas**
-**Objetivo**: Validar endpoint `ODATA_Cab_Borrador_Fra_Compra` para POST
-**Contexto**: Usuario ya había probado extracción exitosa de `Vendor_Shipment_No`
+- **Objetivo**: Validar endpoint `ODATA_Cab_Borrador_Fra_Compra` para POST
+- **Contexto**: Usuario ya había probado extracción exitosa de `Vendor_Shipment_No`
 
 #### **13:01 - Primer Error: Estructura JSON**
 **Problema**: Error 400 "Invalid Request Body"  
@@ -51,12 +51,14 @@ Registro cronológico inverso (más reciente primero) de todas las pruebas, iter
 
 #### **13:16 - Confirmación Error Permisos**
 **Re-test confirmatorio con mismo usuario**  
-**Resultado**: Mismo error de permisos  
+**Resultado**: Mismo error de permisos
+
 **Conclusión**: Problema sistémico de permisos, no de estructura
 
 #### **13:20 - Análisis Documentación Oficial**
 **Revisión exhaustiva**: Documento SD253091 Rev1.1  
-**Verificación**: 100% conformidad entre implementación y especificación ARES  
+**Verificación**: 100% conformidad entre implementación y especificación ARES
+
 **Conclusión**: Documentación correcta, problema es de permisos
 
 #### **13:21 - Búsqueda Credenciales Correos**
@@ -72,18 +74,22 @@ Registro cronológico inverso (más reciente primero) de todas las pruebas, iter
 
 #### **13:25 - Error 401 con Credenciales "Correctas"**
 **Test**: POST con credenciales encontradas  
-**Error**: HTTP 401 - Authentication_InvalidCredentials  
+**Error**: HTTP 401 - Authentication_InvalidCredentials
+
 **Análisis**: Credenciales posiblemente de producción, no pruebas
 
 #### **13:27 - Discrepancia Documentación Identificada**
 **Contradicción detectada**:
 - **Correos junio**: Solo 4 endpoints permiten POST (`ODATA_Cab_Compra`, etc.)
 - **Documento agosto**: `ODATA_Cab_Borrador_Fra_Compra` también permite POST
+
 **Conclusión**: Desconexión entre documentación y realidad del sistema
 
 #### **13:28 - Cambio a Endpoint Confirmado**
-**Acción**: Actualizar workflow a `ODATA_Cab_Compra`  
-**Razón**: Endpoint confirmado por Andrés como funcional para POST  
+**Acción**: Actualizar workflow a `ODATA_Cab_Compra`
+
+**Razón**: Endpoint confirmado por Andrés como funcional para POST
+
 **URL**: Cambio de `/ODataV4/` a `/OData/`
 
 #### **13:48 - Pruebas Múltiples Credenciales**
@@ -106,14 +112,16 @@ Registro cronológico inverso (más reciente primero) de todas las pruebas, iter
 
 ### Análisis de Impacto
 
-**Desarrollo proyecto DIESSA**: 
+**Desarrollo proyecto DIESSA**:
+
 - **Status**: Completamente bloqueado
 - **Causa**: Infraestructura API no operativa para escritura
 - **Dependencia**: Resolución técnica urgente por ARES
 
 **Documentación vs Realidad**:
+
 - **Gap crítico**: Documentación no refleja estado real del sistema
-- **Credibilidad**: Documentación técnica no corresponde con implementación
+- **Credibilidad**: Documentación técnica no corresponde con implementación  
 - **Proceso**: Necesaria verificación completa endpoints disponibles
 
 ### Recomendaciones Urgentes
