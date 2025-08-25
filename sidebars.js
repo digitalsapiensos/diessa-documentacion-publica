@@ -15,8 +15,13 @@ const sidebars = {
         },
         {
           type: 'doc',
+          id: 'sistemas-diessa/odata-facturacion-compras',
+          label: 'ODATA para Facturación de Compras SD 253091',
+        },
+        {
+          type: 'doc',
           id: 'sistemas-diessa/odata-facturacion-compras-entorno-pruebas',
-          label: 'ODATA Facturación Compras - Entorno de Pruebas',
+          label: 'Entorno de Pruebas',
         },
       ],
     },
