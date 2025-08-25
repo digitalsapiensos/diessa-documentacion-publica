@@ -18,11 +18,6 @@ const sidebars = {
           id: 'sistemas-diessa/odata-facturacion-compras-entorno-pruebas',
           label: 'ODATA Facturación Compras - Entorno de Pruebas',
         },
-        {
-          type: 'doc',
-          id: 'sistemas-diessa/workflow-n8n-crear-facturas',
-          label: 'Workflow n8n - Crear Facturas',
-        },
       ],
     },
     {
