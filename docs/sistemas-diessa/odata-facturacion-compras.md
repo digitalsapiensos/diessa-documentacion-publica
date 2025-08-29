@@ -23,13 +23,17 @@ Todos los endpoints comparten una URL base común, diferente para cada entorno:
 
 **🧪 Entorno de Pruebas:**
 ```
-https://cloud10.ares-cn.es:18098/Diessa2_Nav2018CU39_PRUEBAS/ODataV4/Company('Diessa')/<nombre_metodo>
+https://cloud10.ares-cn.es:18098/Diessa2_Nav2018CU39_PRUEBAS/OData/Company('Diessa')/<nombre_metodo>
 ```
 
 **🏭 Entorno de Producción:**
 ```
-https://cloud10.ares-cn.es:18088/Diessa2_Nav2018CU39/ODataV4/Company('Diessa')/<nombre_metodo>
+https://cloud10.ares-cn.es:18088/Diessa2_Nav2018CU39/OData/Company('Diessa')/<nombre_metodo>
 ```
+
+:::warning Cambio de URL Crítico
+**ACTUALIZACIÓN 26 AGOSTO 2025**: Las URLs utilizan `/OData/` en lugar de `/ODataV4/` según confirmación técnica ARES.
+:::
 
 ### Endpoints Disponibles
 
@@ -179,6 +183,40 @@ El campo **[Nº albarán proveedor]** fue añadido específicamente para resolve
 ### Clave Principal
 `[Tipo documento]`, `[Nº]`
 
+:::info Actualización 26 Agosto 2025
+Andrés Escribano confirmó el proceso completo de creación de facturas con ejemplos específicos y campo "No" vacío obligatorio.
+:::
+
+### Proceso de Creación (Actualizado 26 Agosto 2025)
+
+**Secuencia validada**:
+1. **Crear cabecera** con campo `"No": ""` (vacío)
+2. **Navision asigna** número automáticamente  
+3. **Leer ODATA** para obtener el número asignado
+4. **Crear líneas** usando el Document_No obtenido
+
+### Estructura JSON para Inserción
+
+**Cabecera borrador factura**:
+```json
+{
+  "Document_Type": "Invoice",
+  "No": "",  // Campo vacío OBLIGATORIO para inserción
+  "Buy_from_Vendor_No": "PR001147",
+  "Pay_to_Vendor_No": "PR001147",
+  "Document_Date": "2025-08-26",
+  "Posting_Date": "2025-08-26",
+  "Due_Date": "2025-09-26",
+  "Vendor_Invoice_No": "1234",
+  "Posting_Description": "TEST FACTURA AEM",
+  "VAT_Bus_Posting_Group": "7_NACIONAL"
+}
+```
+
+:::warning Campo "No" Crítico
+Para insertar registros, el campo "No" debe enviarse **vacío** (`""`). Navision asignará automáticamente el número correspondiente.
+:::
+
 ### Campos de Cabecera
 
 | Campo | Descripción |
@@ -227,6 +265,60 @@ El campo **[Nº albarán proveedor]** fue añadido específicamente para resolve
 | **Pago-a Nº proveedor** | **Se hereda de la cabecera** del borrador de factura |
 | **Nº albarán compra** | Identifica qué albarán está liquidando esta línea de factura. Relacionado con `ODATA_Lin_Albaran_Compra.[Nº documento]` |
 | **Nº línea albarán compra** | Identifica qué línea de albarán está liquidando esta línea de factura. Relacionado con `ODATA_Lin_Albaran_Compra.[Nº línea]` |
+
+### Estructura JSON para Inserción (Actualizado 26 Agosto 2025)
+
+:::info Especificaciones Oficiales ARES
+Los siguientes ejemplos fueron proporcionados por Andrés Escribano como estructuras validadas para creación de líneas.
+:::
+
+**Línea de texto explicativo**:
+```json
+{
+  "Document_Type": "Invoice",
+  "Document_No": "FC25-000961",
+  "Line_No": 10000,
+  "Type": " ",  // Espacio para línea texto
+  "No": "",
+  "Description": "Línea de texto TEST",
+  "Location_Code": "",
+  "Quantity": 0,
+  "Direct_Unit_Cost": 0,
+  "Line_Discount_Percent": 0,
+  "VAT_Bus_Posting_Group": "",
+  "VAT_Prod_Posting_Group": "",
+  "Buy_from_Vendor_No": "",
+  "Pay_to_Vendor_No": "",
+  "Receipt_No": "",
+  "Receipt_Line_No": 0
+}
+```
+
+**Línea de producto con referencia a albarán**:
+```json
+{
+  "Document_Type": "Invoice",
+  "Document_No": "FC25-000961",
+  "Line_No": 20000,
+  "Type": "Item",
+  "No": "CM2.0340",
+  "Description": "PILOTO INTERMITENTE LATERAL DCH=IZD P21W emark",
+  "Location_Code": "CENTRAL",
+  "Quantity": 1,
+  "Direct_Unit_Cost": 14.48,
+  "Line_Discount_Percent": 0,
+  "VAT_Bus_Posting_Group": "7_NACIONAL",
+  "VAT_Prod_Posting_Group": "7_IVA21",
+  "Buy_from_Vendor_No": "PR001147",
+  "Pay_to_Vendor_No": "PR001147",
+  "Receipt_No": "ALBC25-003705",
+  "Receipt_Line_No": 10000
+}
+```
+
+:::warning Consideraciones de Testing
+Durante las pruebas del 29 de agosto se identificó que algunos campos pueden requerir configuración específica en entorno sandbox. Los campos básicos (Document_Type, Document_No, Line_No, Type, Description) funcionan correctamente.
+:::
 
 ---
 

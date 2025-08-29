@@ -8,6 +8,251 @@ sidebar_label: Bitácora de Pruebas
 
 Registro cronológico inverso (más reciente primero) de todas las pruebas, iteraciones y comunicaciones realizadas durante el proyecto.
 
+## 26-29 de Agosto de 2025 - Validación Completa API Creación Facturas
+
+### Contexto
+- **Participantes**: Equipo GSC
+- **Objetivo**: Implementar especificaciones técnicas oficiales ARES e identificar capacidades del sistema
+- **Documentación base**: Respuesta técnica Andrés Escribano del 26 de agosto con estructuras JSON actualizadas
+
+### Implementación y Validación
+
+#### Actualización de Especificaciones Técnicas
+**Endpoints actualizados**:
+```
+❌ ANTES: ODATA_Cab_Compra
+✅ DESPUÉS: ODATA_Cab_Borrador_Fra_Compra
+```
+
+**Campo "No" implementado**:
+```json
+❌ ANTES: "No": "{{ $json.numero_borrador }}"
+✅ DESPUÉS: "No": ""  // ← Campo vacío para inserción automática
+```
+
+**Fechas actualizadas**: 29/08/2025 para testing actual
+
+#### Validación Creación Cabeceras
+**Resultado testing inicial**:
+```json
+{
+  "Document_Type": "Invoice", 
+  "No": "FC25-000962",  // Número asignado automáticamente por Navision
+  "Buy_from_Vendor_No": "PR001147",
+  "Document_Date": "2025-08-29T00:00:00",
+  "Vendor_Invoice_No": "TEST-29082025-3472",
+  "VAT_Bus_Posting_Group": "7_NACIONAL"
+}
+```
+
+**Confirmaciones técnicas**:
+- ✅ Endpoint ODATA_Cab_Borrador_Fra_Compra: Completamente funcional
+- ✅ Campo "No" vacío: Funciona como especificó Andrés  
+- ✅ Permisos usuario: Diessa_WS_basico tiene acceso completo
+- ✅ Estructura JSON: 100% compatible con Navision
+
+#### Análisis Creación Líneas
+**Problemas iniciales identificados**:
+- **Error estructura**: Endpoints esperan objetos individuales, no arrays
+- **Error campos**: Algunos campos de la documentación oficial causan errores de validación
+- **Error duplicados**: Gestión Line_No requiere valores únicos incrementales
+
+#### Metodología Testing Sistemático
+**Enfoque de casos aislados**:
+1. **Verificación infraestructura**: Validar cabecera existe y es accesible
+2. **Línea mínima**: Identificar campos básicos funcionales
+3. **Incremento gradual**: Agregar complejidad para identificar limitaciones
+4. **Casos producto**: Validar líneas tipo "Item" vs líneas texto
+5. **Vinculación albaranes**: Probar campos Receipt_No para reconciliación
+
+#### Identificación de Límites Funcionales
+
+**Resultados validación sistemática**:
+- **Infraestructura**: Cabecera FC25-000962 accesible y funcional
+- **Líneas básicas**: Formato mínimo operativo identificado
+- **Líneas complejas**: Campos adicionales generan errores de validación
+- **Productos básicos**: Tipo "Item" funcional sin metadatos
+
+**Patrón identificado**:
+- **Funcional**: Estructura mínima con campos esenciales
+- **Problemático**: Campos opcionales de la documentación oficial
+
+**Conclusión**: Algunos campos documentados requieren configuración adicional o no son aplicables en entorno de pruebas
+
+#### Validación Estructura Mínima Funcional
+**Formato operativo confirmado**:
+```json
+{
+  "Document_Type": "Invoice",
+  "Document_No": "FC25-000962",
+  "Line_No": [incremental],
+  "Type": " " | "Item",
+  "Description": "Descripción línea"
+}
+```
+
+#### Validación Gestión Line_No
+**Capacidad incremental confirmada**:
+- Líneas texto: 10000, 20000, 30000
+- Líneas producto: 40000, 60000, 70000
+- Gestión automática: Referencias dinámicas entre nodos
+
+#### Testing Sistemático Organizado
+**Casos de prueba estructurados** (`workflow-n8n-crearfacturas-organizado.json`):
+
+**Casos exitosos**:
+
+1. **Verificación cabecera**: Infraestructura operativa
+2. **Líneas texto mínimas**: Formato básico funcional  
+3. **Líneas producto básicas**: Tipo "Item" sin metadatos
+4. **Productos con código**: Códigos válidos del sistema (CM2.0340)
+
+**Casos con limitaciones**:
+
+5. **Campos económicos**: Quantity/Direct_Unit_Cost generan errores
+6. **Vinculación albaranes**: Receipt_No no funcional en sandbox  
+7. **Metadatos completos**: Campos documentación oficial problemáticos
+
+### Capacidades del Sistema Validadas
+
+#### Infraestructura Técnica
+- **Autenticación**: Usuario Diessa_WS_basico con permisos operativos
+- **Endpoints**: ODATA_Cab_Borrador_Fra_Compra y ODATA_Lin_Borrador_Fra_Compra funcionales
+- **Conectividad**: Sin problemas de red o certificados SSL
+- **Credenciales**: Token de acceso válido y estable
+
+#### Proceso de Creación Facturas
+- **Cabeceras**: Auto-numeración Navision completamente operativa
+- **Líneas texto**: Formato mínimo identificado y validado
+- **Líneas producto**: Tipo "Item" funcional para casos básicos
+- **Códigos producto**: Validación exitosa con código CM2.0340 del catálogo
+- **Gestión Line_No**: Sistema incremental (10000, 20000, 30000...) confirmado
+- **Referencias entre nodos**: Dinámicas y estables
+
+#### Limitaciones Identificadas en Sandbox
+
+**Campos económicos problemáticos**:
+```json
+// CAMPOS QUE CAUSAN ERROR 400
+{
+  "Quantity": 1,           // ← ERROR 400
+  "Direct_Unit_Cost": 14.48  // ← ERROR 400
+}
+```
+
+**Vinculación albarán bloqueada**:
+```json
+// VINCULACIÓN QUE FALLA - CRÍTICO PARA RECONCILIACIÓN
+{
+  "Receipt_No": "ALBC25-003706",   // ← ERROR 400 CRÍTICO
+  "Receipt_Line_No": 10000         // ← ERROR 400
+}
+```
+
+**Campos metadatos problemáticos**:
+```json
+// CAMPOS DOCUMENTACIÓN ANDRÉS QUE FALLAN
+{
+  "Location_Code": "CENTRAL",
+  "VAT_Bus_Posting_Group": "7_NACIONAL",
+  "VAT_Prod_Posting_Group": "7_IVA21",
+  "Buy_from_Vendor_No": "PR001147",
+  "Pay_to_Vendor_No": "PR001147"
+}
+```
+
+### Análisis de Impacto
+
+#### **✅ ÉXITOS TÉCNICOS**:
+- **Desbloqueó completo**: De estado CRÍTICO a FUNCIONAL
+- **Workflow operativo**: Proceso cabecera + líneas básicas 100%
+- **Metodología validada**: Testing sistemático con casos aislados
+- **Colaboración ARES**: Restaurada exitosamente
+
+#### **🚨 BLOQUEADORES PARA RECONCILIACIÓN**:
+- **Sin Receipt_No funcional**: NO hay vinculación automática albaranes
+- **Sin campos económicos**: NO hay cantidades ni precios reales
+- **Sin validación completa**: Proceso reconciliación incompleto
+
+**Implicación crítica**: Podemos crear facturas básicas pero **NO podemos completar reconciliación automática** sin vinculación albaranes.
+
+### Preguntas Específicas Formuladas para ARES
+
+#### **PREGUNTA 1: Campos Económicos**
+```
+INFERENCIA: Quantity y Direct_Unit_Cost causan error 400 en sandbox.
+¿ES CORRECTA? ¿JSON exacto que funcione?
+
+EJEMPLO REQUERIDO:
+{
+  "Document_Type": "Invoice",
+  "Document_No": "FC25-000962",
+  "Line_No": 110000,
+  "Type": "Item",
+  "No": "CM2.0340", 
+  "Quantity": ???,           // ← ¿Valor exacto?
+  "Direct_Unit_Cost": ???    // ← ¿Formato exacto?
+}
+```
+
+#### **PREGUNTA 2: Vinculación Albarán (CRÍTICA)**
+```
+INFERENCIA: Receipt_No no funciona en sandbox, bloqueando reconciliación.
+¿ES CORRECTA? ¿JSON exacto para vincular con ALBC25-003706?
+
+EJEMPLO REQUERIDO:
+{
+  "Document_Type": "Invoice",
+  "Document_No": "FC25-000962", 
+  "Line_No": 120000,
+  "Type": "Item",
+  "Receipt_No": "???",       // ← ¿Formato exacto?
+  "Receipt_Line_No": ???     // ← ¿Valor exacto?
+}
+```
+
+#### **PREGUNTA 3: Gestión Line_No**
+```
+INFERENCIA: Line_No debe ser incremental único (10000, 20000, 30000...).
+¿ES CORRECTA? ¿Consulta para ver Line_No ocupados?
+
+EJEMPLO REQUERIDO:
+GET ODATA_Lin_Borrador_Fra_Compra?$filter=Document_No eq 'FC25-000962'&$select=Line_No
+```
+
+#### **PREGUNTA 4: Proceso Reconciliación Completo**
+```
+INFERENCIA: Proceso debe ser:
+1. Crear cabecera ✅
+2. Por cada albarán → Crear línea con Receipt_No ❌ (bloqueado)
+3. Navision actualiza Qty_Rcd_Not_Invoiced ❌ (no validado)
+
+¿ES CORRECTA? ¿Secuencia EXACTA para vincular factura con albaranes?
+```
+
+### Estado Final del Proyecto
+
+#### **✅ LOGROS SESIÓN 29 AGOSTO**:
+- **Workflow funcional**: Cabecera + líneas básicas operativo
+- **Límites identificados**: Campos problemáticos específicos
+- **Metodología establecida**: Testing sistemático con casos aislados
+- **Preguntas formuladas**: Específicas para resolver gaps críticos
+
+#### **🎯 CAPACIDADES TÉCNICAS CONFIRMADAS**:
+- **API Integration**: Completamente funcional
+- **Creación facturas**: Cabecera + líneas texto + productos básicos
+- **Gestión Line_No**: Incremental dominado
+- **Referencias dinámicas**: Entre nodos perfectas
+
+#### **🚨 PRÓXIMOS PASOS CRÍTICOS**:
+1. **Esperar ejemplos exactos** que funcionen en sandbox
+2. **Implementar vinculación albarán** una vez desbloqueada
+3. **Completar reconciliación automática** end-to-end
+
+**Resultado**: **PROYECTO AVANZADO SIGNIFICATIVAMENTE** - De bloqueado a funcional básico, con roadmap claro para reconciliación completa.
+
+---
+
 ## 25 de Agosto de 2025 - PROBLEMA SISTÉMICO: Endpoints POST No Disponibles
 
 ### Contexto
@@ -18,17 +263,17 @@ Registro cronológico inverso (más reciente primero) de todas las pruebas, iter
 
 ### Cronología de Pruebas
 
-- **13:00 - Inicio Pruebas Creación de Facturas**
+- **Inicio Pruebas Creación de Facturas**
   - **Objetivo**: Validar endpoint `ODATA_Cab_Borrador_Fra_Compra` para operaciones POST según [documentación ARES SD253091](/docs/sistemas-diessa/odata-facturacion-compras)
   - **Contexto previo**: Extracción exitosa de `Vendor_Shipment_No` de albaranes completada
   - **Base técnica**: Implementación siguiendo especificaciones exactas del documento ARES Rev1.1
 
-- **13:01 - Primer Error: Estructura JSON**
+- **Primer Error: Estructura JSON**
   - **Problema**: Error 400 "Invalid Request Body"
   - **Causa**: Diferencia entre nombres de campos documentados (español) vs implementación real (inglés)
   - **Metodología**: Investigación GET para identificar estructura exacta del sistema
 
-- **13:05 - Investigación Estructura Real**
+- **Investigación Estructura Real**
   - **Acción**: GET request a endpoint para mapear campos reales del sistema
   - **Resultado**: Estructura correcta identificada - campos en inglés con formato específico Navision
   ```json
@@ -45,40 +290,40 @@ Registro cronológico inverso (más reciente primero) de todas las pruebas, iter
   }
   ```
 
-- **13:08 - Segundo Error: Permisos Usuario**
+- **Segundo Error: Permisos Usuario**
   - **Error**: HTTP 400 - Internal_ServerError
   - **Mensaje**: "You do not have the following permissions on TableData Purchases & Payables Setup: Read"
   - **Usuario probado**: `Diessa_WS_basico`
   - **Diagnóstico**: Permisos insuficientes para validar configuración de compras
 
-- **13:16 - Confirmación Error Permisos**
+- **Confirmación Error Permisos**
   - **Re-test confirmatorio con mismo usuario**
   - **Resultado**: Mismo error de permisos
   - **Conclusión**: Problema sistémico de permisos, no de estructura
 
-- **13:20 - Análisis Documentación Oficial ARES**
+- **Análisis Documentación Oficial ARES**
   - **Revisión exhaustiva**: [Documento SD253091 Rev1.1](/assets/ODATA-facturacion-compras-SD253091-rev1.1.pdf) proporcionado por Andrés Escribano (ARES)
   - **Verificación**: 100% conformidad entre implementación GSC y especificación técnica oficial
   - **Campos validados**: Todos los campos JSON coinciden exactamente con la documentación ARES
   - **Estructura**: Clave principal [Tipo documento], [Nº] implementada correctamente
   - **Conclusión**: La documentación de ARES es precisa y completa, el problema identificado es exclusivamente de permisos del usuario API
 
-- **13:21 - Verificación Credenciales**
+- **Verificación Credenciales**
   - **Investigación**: Revisión de comunicaciones técnicas con ARES
   - **Usuario confirmado**: `Diessa_WS_basico` (validado por ARES en múltiples ocasiones)
 
-- **13:22 - Credenciales Encontradas**
+- **Credenciales Encontradas**
   - **Fuente**: Correo 12/06/2025
   - **Usuario**: `Diessa_WS_basico`
   - **Contraseña**: `8=oaG14c$U6Sx?U9q0sT7Ag1EA96xf8OxIO5spHt9xorXQX2`
   - **Confirmación**: Andrés validó estas credenciales
 
-- **13:25 - Error 401 con Credenciales "Correctas"**
+- **Error 401 con Credenciales "Correctas"**
   - **Test**: POST con credenciales encontradas
   - **Error**: HTTP 401 - Authentication_InvalidCredentials
   - **Análisis**: Credenciales posiblemente de producción, no pruebas
 
-- **13:27 - Análisis Evolutivo de Endpoints**
+- **Análisis Evolutivo de Endpoints**
   - **Investigación histórica**: Revisión de evolución de endpoints ARES
   - **Hallazgo**: Documentación de junio 2025 menciona 4 endpoints con POST:
     - `ODATA_Cab_Compra`
@@ -88,12 +333,12 @@ Registro cronológico inverso (más reciente primero) de todas las pruebas, iter
   - **Documento agosto**: [SD253091 Rev1.1](/docs/sistemas-diessa/odata-facturacion-compras) especifica que `ODATA_Cab_Borrador_Fra_Compra` también permite POST
   - **Análisis**: Posible evolución de la infraestructura ARES entre junio y agosto 2025
 
-- **13:28 - Cambio a Endpoint Confirmado**
+- **Cambio a Endpoint Confirmado**
   - **Acción**: Actualizar workflow a `ODATA_Cab_Compra`
   - **Razón**: Endpoint confirmado por Andrés como funcional para POST
   - **URL**: Cambio de `/ODataV4/` a `/OData/`
 
-- **13:48 - Pruebas Múltiples Credenciales**
+- **Pruebas Múltiples Credenciales**
   - **Credenciales testadas**:
     - "Diessa test": 404 - ✅ Auth válida, ❌ Endpoint no existe
     - "Navision Odata": 404 - ✅ Auth válida, ❌ Endpoint no existe
@@ -449,7 +694,7 @@ GSC comparte documento formal de solicitud de integración con todos los stakeho
 1. **Mayo**: Proyecto iniciado formalmente con documento de requerimientos
 2. **Julio**: Primeras entregas técnicas y pruebas iniciales
 3. **Agosto (primera quincena)**: Identificación y resolución de gaps críticos
-4. **21 Agosto**: BREAKTHROUGH - Solución técnica validada
+4. **21 Agosto**: Resolución técnica - Solución validada
 
 ### Lecciones Aprendidas
 

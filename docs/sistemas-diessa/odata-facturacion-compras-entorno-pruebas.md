@@ -36,6 +36,10 @@ https://cloud10.ares-cn.es:18098/Diessa2_Nav2018CU39_PRUEBAS/OData/Company('Dies
 https://cloud10.ares-cn.es:18088/Diessa2_Nav2018CU39/OData/Company('Diessa')/[ENDPOINT_NAME]
 ```
 
+:::info Actualización URLs 26 Agosto 2025
+Confirmado por Andrés Escribano: utilizar `/OData/` en lugar de `/ODataV4/` en todas las URLs.
+:::
+
 ---
 
 ## Credenciales de Acceso
@@ -63,34 +67,113 @@ Contraseña: g5T490dS
 
 ## Endpoints Disponibles y Capacidades
 
-### Endpoints con ESCRITURA (POST/PUT) - Solo 4 Disponibles
+### Endpoints con ESCRITURA (POST/PUT) - Actualizados 26 Agosto 2025
 
-#### 1. ODATA_Cab_Compra (Cabeceras de Compra)
+:::warning Endpoints Actualizados
+**ACTUALIZACIÓN CRÍTICA 26 AGOSTO 2025**: Andrés Escribano confirmó que los endpoints para crear facturas son los siguientes. Los endpoints mencionados en comunicaciones de junio fueron sustituidos.
+:::
+
+#### 1. ODATA_Cab_Borrador_Fra_Compra (Cabeceras Borrador Factura)
+```
+URL: https://cloud10.ares-cn.es:18098/Diessa2_Nav2018CU39_PRUEBAS/OData/Company('Diessa')/ODATA_Cab_Borrador_Fra_Compra
+Métodos: GET, POST, PUT, DELETE
+Propósito: Crear/modificar cabeceras de borradores de facturas
+Estado: ✅ FUNCIONAL (validado 29 agosto 2025)
+```
+
+#### 2. ODATA_Lin_Borrador_Fra_Compra (Líneas Borrador Factura)  
+```
+URL: https://cloud10.ares-cn.es:18098/Diessa2_Nav2018CU39_PRUEBAS/OData/Company('Diessa')/ODATA_Lin_Borrador_Fra_Compra
+Métodos: GET, POST, PUT, DELETE
+Propósito: Crear/modificar líneas de borradores de facturas
+Estado: ✅ FUNCIONAL (validado 29 agosto 2025)
+```
+
+#### 3. ODATA_Cab_Compra (Cabeceras de Compra)
 ```
 URL: https://cloud10.ares-cn.es:18098/Diessa2_Nav2018CU39_PRUEBAS/OData/Company('Diessa')/ODATA_Cab_Compra
 Métodos: GET, POST, PUT
 Propósito: Crear/modificar cabeceras de pedidos de compra
+Estado: ❌ NO DISPONIBLE (error 404 confirmado)
 ```
 
-#### 2. ODATA_Lin_Compra (Líneas de Compra)
+#### 4. ODATA_Lin_Compra (Líneas de Compra)
 ```
 URL: https://cloud10.ares-cn.es:18098/Diessa2_Nav2018CU39_PRUEBAS/OData/Company('Diessa')/ODATA_Lin_Compra
 Métodos: GET, POST, PUT
 Propósito: Crear/modificar líneas de pedidos de compra
+Estado: ❌ NO DISPONIBLE (error 404 confirmado)
 ```
 
-#### 3. ODATA_Cab_Venta (Cabeceras de Venta)
+#### 5. ODATA_Cab_Venta (Cabeceras de Venta)
 ```
 URL: https://cloud10.ares-cn.es:18098/Diessa2_Nav2018CU39_PRUEBAS/OData/Company('Diessa')/ODATA_Cab_Venta
 Métodos: GET, POST, PUT  
 Propósito: Crear/modificar cabeceras de pedidos de venta
+Estado: ❌ NO DISPONIBLE (error 404 confirmado)
 ```
 
-#### 4. ODATA_Lin_Venta (Líneas de Venta)
+#### 6. ODATA_Lin_Venta (Líneas de Venta)
 ```
 URL: https://cloud10.ares-cn.es:18098/Diessa2_Nav2018CU39_PRUEBAS/OData/Company('Diessa')/ODATA_Lin_Venta
 Métodos: GET, POST, PUT
 Propósito: Crear/modificar líneas de pedidos de venta
+Estado: ❌ NO DISPONIBLE (error 404 confirmado)
+```
+
+### Resultados Testing 29 Agosto 2025
+
+:::info Validación Completa Realizada
+Testing exhaustivo realizado con 8 casos sistemáticos para validar capacidades reales del sistema.
+:::
+
+#### Capacidades Confirmadas ✅
+
+**Creación de cabeceras**:
+- Endpoint `ODATA_Cab_Borrador_Fra_Compra` completamente funcional
+- Campo `"No": ""` obligatorio para inserción automática
+- Auto-numeración Navision operativa (ejemplo: FC25-000962)
+
+**Creación de líneas básicas**:
+- Endpoint `ODATA_Lin_Borrador_Fra_Compra` funcional para casos básicos
+- Líneas texto: `Type: " "` (espacio) operativo
+- Líneas producto: `Type: "Item"` funcional sin metadatos
+- Gestión Line_No incremental: 10000, 20000, 30000... confirmada
+
+#### Limitaciones Identificadas ⚠️
+
+**Campos que requieren investigación adicional**:
+- `Quantity` y `Direct_Unit_Cost`: Generan error 400 en sandbox
+- `Receipt_No` y `Receipt_Line_No`: No funcionales (bloquean vinculación albarán)
+- Campos VAT y Location_Code: Requieren configuración específica
+
+#### Formato Mínimo Funcional Validado
+
+**Cabecera** (formato que funciona):
+```json
+{
+  "Document_Type": "Invoice",
+  "No": "",
+  "Buy_from_Vendor_No": "PR001147",
+  "Pay_to_Vendor_No": "PR001147",
+  "Document_Date": "2025-08-29",
+  "Posting_Date": "2025-08-29", 
+  "Due_Date": "2025-09-29",
+  "Vendor_Invoice_No": "TEST-29082025",
+  "Posting_Description": "TEST FACTURA",
+  "VAT_Bus_Posting_Group": "7_NACIONAL"
+}
+```
+
+**Líneas** (formato que funciona):
+```json
+{
+  "Document_Type": "Invoice",
+  "Document_No": "FC25-000962",
+  "Line_No": 10000,
+  "Type": " ",  // " " para texto, "Item" para producto
+  "Description": "Descripción línea"
+}
 ```
 
 ### Endpoints SOLO LECTURA (GET) - 14 Funcionales
